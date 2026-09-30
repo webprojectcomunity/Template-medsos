@@ -3,393 +3,325 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bingkai KPU - Full Custom Gradient & Text Alignment Control</title>
-    <!-- Tailwind CSS -->
+    <title>Generator Frame KPU - Mode Cover & Dual Photo (3:4)</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Cropper.js CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+    <!-- Google Fonts: Montserrat -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
-        body {
-            background-color: #0f172a;
-            color: #f8fafc;
-            font-family: 'Montserrat', sans-serif;
-        }
-        .canvas-container {
-            max-width: 100%;
-            border-radius: 1rem;
-            background-color: #1e293b;
-            cursor: crosshair;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
-            border: 2px solid #334155;
-        }
-        canvas {
-            width: 100%;
-            height: auto;
-            display: block;
-            touch-action: none;
-            border-radius: 0.875rem;
-        }
-        
-        /* Modern Range Slider Style */
-        input[type=range] {
-            -webkit-appearance: none;
-            width: 100%;
-            height: 5px;
-            background: #334155;
-            border-radius: 999px;
-            outline: none;
-        }
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 18px;
-            width: 18px;
-            border-radius: 50%;
-            background: #ef4444;
-            cursor: pointer;
-            border: 2px solid #ffffff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-
-        /* D-Pad Button */
-        .d-pad-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            aspect-ratio: 1;
-            background-color: #334155;
-            border-radius: 0.375rem;
-            color: #f8fafc;
-            font-size: 0.875rem;
-            transition: all 0.15s;
-        }
-        .d-pad-btn:hover { background-color: #475569; }
-        .d-pad-btn:active { transform: scale(0.92); }
-
-        /* Custom Scrollbar untuk Bottom Sheet Mobile */
-        .custom-scroll::-webkit-scrollbar {
-            width: 4px;
-        }
-        .custom-scroll::-webkit-scrollbar-thumb {
-            background: #334155;
-            border-radius: 4px;
-        }
+        body { font-family: 'Montserrat', sans-serif; }
+        /* Custom scrollbar styling */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col p-3 md:p-6 pb-72 lg:pb-6">
+<body class="bg-slate-950 text-slate-100 min-h-screen p-4 md:p-8 flex flex-col items-center">
 
-    <!-- Top Bar Navigation -->
-    <header class="max-w-7xl w-full mx-auto flex items-center justify-between pb-3 border-b border-slate-800 mb-3 md:mb-6">
-        <div class="flex items-center gap-2 md:gap-3">
-            <div class="bg-red-600 px-2 py-1 rounded-lg font-bold text-white text-xs tracking-wider">KPU</div>
-            <h1 class="text-sm md:text-base font-bold text-slate-100">Editor Bingkai Studio</h1>
+    <!-- Header App -->
+    <header class="max-w-6xl w-full mb-6 text-center md:text-left flex flex-col md:flex-row justify-between items-center gap-4 border-b border-slate-800 pb-4">
+        <div>
+            <h1 class="text-2xl md:text-3xl font-black tracking-tight text-white flex items-center gap-2 justify-center md:justify-start">
+                <span class="bg-red-600 text-white px-2 py-0.5 rounded text-sm font-bold">KPU</span> Editor Frame Berita
+            </h1>
+            <p class="text-xs md:text-sm text-slate-400 mt-1">Pembuat Konten Gambar KPU: Mode Single Cover & Dual Photo Gradient (Rasio 3:4)</p>
         </div>
-        <button id="btnDownload" type="button" class="bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold text-xs px-3.5 py-2 rounded-xl shadow-lg shadow-red-600/30 transition-all flex items-center gap-1.5">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-            <span>Unduh JPG</span>
+        <button id="btnDownload" class="w-full md:w-auto bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 text-sm">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+            Unduh Hasil (JPG)
         </button>
     </header>
 
-    <!-- Main Workspace Grid -->
-    <div class="max-w-7xl w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 items-start flex-1">
+    <!-- Main Layout Grid -->
+    <main class="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
-        <!-- KANVAS PREVIEW -->
-        <div class="lg:col-span-8 lg:order-2 flex flex-col items-center">
-            <div id="canvasWrapper" class="canvas-container relative w-full max-w-[420px] lg:max-w-[540px]">
-                <canvas id="mainCanvas" width="1080" height="1350"></canvas>
+        <!-- CANVAS PREVIEW AREA (LEFT / CENTER) -->
+        <section class="lg:col-span-7 flex flex-col items-center w-full">
+            <!-- Rasio kontainer disesuaikan ke 3/4 dan lebar maksimal diperluas -->
+            <div id="dropZoneArea" class="relative w-full max-w-[540px] aspect-[3/4] bg-slate-900 border-2 border-dashed border-slate-700 rounded-2xl shadow-2xl overflow-hidden group transition-all">
+                <!-- Canvas Element (1080x1440 Native Resolution untuk Skala 3:4) -->
+                <canvas id="mainCanvas" width="1080" height="1440" class="w-full h-full object-contain cursor-crosshair"></canvas>
                 
-                <!-- Indikator Target Aktif -->
-                <div id="statusBadge" class="absolute top-3 left-3 bg-red-600/90 text-white text-[10px] md:text-[11px] font-semibold px-2.5 py-1 rounded-full shadow-md backdrop-blur-sm pointer-events-none flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
-                    <span id="statusBadgeText">Foto Utama Terpilih</span>
+                <!-- Overlay Drag & Drop Helper Text -->
+                <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-6 text-center pointer-events-none">
+                    <svg class="w-12 h-12 text-red-500 mb-2 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                    <p class="text-sm font-bold text-white">Tarik & Lepas Gambar di Sini</p>
+                    <p class="text-xs text-slate-400 mt-1">Otomatis masuk ke target foto yang aktif</p>
                 </div>
             </div>
-            <p class="text-[11px] text-slate-500 mt-2 text-center">Petunjuk: Klik foto/teks di kanvas untuk berganti mode kontrol.</p>
-        </div>
-
-        <!-- PANEL KONTROL -->
-        <div id="controlPanel" class="lg:col-span-4 lg:order-1 fixed bottom-0 left-0 right-0 z-40 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 p-3.5 rounded-t-3xl shadow-[0_-10px_25px_-5px_rgba(0,0,0,0.5)] lg:relative lg:bottom-auto lg:left-auto lg:right-auto lg:z-auto lg:bg-slate-900 lg:border lg:p-4 lg:rounded-2xl lg:shadow-xl custom-scroll max-h-[58vh] lg:max-h-none overflow-y-auto space-y-3">
             
-            <div class="w-12 h-1 bg-slate-700 rounded-full mx-auto mb-1 lg:hidden"></div>
+            <p class="text-xs text-slate-500 mt-3 text-center">
+                💡 <span class="text-slate-400">Tips:</span> Klik/Sentuh pada gambar/teks di preview untuk langsung mengeditnya. Tarik teks untuk mengubah posisinya secara bebas.
+            </p>
+        </section>
 
-            <!-- NAVBAR TAB SELECTOR 4 MODUL -->
-            <div class="grid grid-cols-4 gap-1 bg-slate-800/90 p-1 rounded-xl text-[11px] font-semibold sticky top-0 z-10">
-                <button type="button" id="tabImg1" onclick="selectActiveTarget('img1')" class="py-2 rounded-lg transition-all text-center bg-red-600 text-white shadow truncate">
-                    Foto 1
-                </button>
-                <button type="button" id="tabImg2" onclick="selectActiveTarget('img2')" class="py-2 rounded-lg transition-all text-center text-slate-400 hover:text-white truncate">
-                    Foto 2
-                </button>
-                <button type="button" id="tabBlend" onclick="selectActiveTarget('blend')" class="py-2 rounded-lg transition-all text-center text-slate-400 hover:text-white truncate">
-                    Gradasi
-                </button>
-                <button type="button" id="tabText" onclick="selectActiveTarget('text')" class="py-2 rounded-lg transition-all text-center text-slate-400 hover:text-white truncate">
-                    Teks
-                </button>
-            </div>
-
-            <!-- SECTION A: KONTROL GAMBAR (IMG1 & IMG2) -->
-            <div id="sectionImageControls" class="space-y-3">
-                <div class="grid grid-cols-2 gap-2">
-                    <label for="inputFotoActive" class="flex items-center justify-center gap-1.5 px-3 py-2 bg-slate-800 hover:bg-slate-700 active:scale-95 border border-slate-700 rounded-xl cursor-pointer text-xs font-semibold text-slate-200 transition-all">
-                        <svg class="w-4 h-4 text-red-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                        <span id="uploadBtnText" class="truncate">Upload Foto</span>
-                        <input type="file" id="inputFotoActive" class="hidden" accept="image/*" />
-                    </label>
-
-                    <button type="button" onclick="recrop(activeImgKey)" class="flex items-center justify-center gap-1.5 px-3 py-2 bg-slate-800 hover:bg-slate-700 active:scale-95 border border-slate-700 rounded-xl text-xs font-semibold text-slate-200 transition-all">
-                        <svg class="w-4 h-4 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 0L4 4m5.121 5.121l7 7"></path></svg>
-                        <span>Crop Foto</span>
+        <!-- CONTROLS & PANEL AREA (RIGHT) -->
+        <section class="lg:col-span-5 w-full bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col gap-5">
+            
+            <!-- Target Selection Tabs -->
+            <div>
+                <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Pilih Target Edit:</label>
+                <div class="grid grid-cols-5 bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs font-semibold">
+                    <button id="tabCover" onclick="selectActiveTarget('cover')" class="py-2 rounded-lg transition-all text-center text-slate-400 hover:text-white truncate">
+                        Cover
+                    </button>
+                    <button id="tabImg1" onclick="selectActiveTarget('img1')" class="py-2 rounded-lg transition-all text-center text-slate-400 hover:text-white truncate">
+                        Foto 1
+                    </button>
+                    <button id="tabImg2" onclick="selectActiveTarget('img2')" class="py-2 rounded-lg transition-all text-center text-slate-400 hover:text-white truncate">
+                        Foto 2
+                    </button>
+                    <button id="tabBlend" onclick="selectActiveTarget('blend')" class="py-2 rounded-lg transition-all text-center text-slate-400 hover:text-white truncate">
+                        Gradasi
+                    </button>
+                    <button id="tabText" onclick="selectActiveTarget('text')" class="py-2 rounded-lg transition-all text-center text-slate-400 hover:text-white truncate">
+                        Teks
                     </button>
                 </div>
-
-                <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-800 space-y-2.5">
-                    <div>
-                        <div class="flex justify-between text-[11px] font-medium text-slate-400 mb-1">
-                            <span>Ukuran / Zoom</span>
-                            <span id="scaleVal" class="text-slate-200 font-bold">100%</span>
-                        </div>
-                        <input type="range" id="scaleInput" min="0.1" max="3" step="0.01" value="1">
-                    </div>
-
-                    <div>
-                        <div class="flex justify-between text-[11px] font-medium text-slate-400 mb-1">
-                            <span>Putar (Rotasi)</span>
-                            <span id="rotateVal" class="text-slate-200 font-bold">0°</span>
-                        </div>
-                        <input type="range" id="rotateInput" min="-180" max="180" value="0">
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3 pt-1">
-                        <div>
-                            <div class="flex justify-between text-[10px] text-slate-400 mb-1">
-                                <span>Kecerahan</span>
-                                <span id="brightVal" class="text-slate-200">100%</span>
-                            </div>
-                            <input type="range" id="brightInput" min="0" max="200" value="100">
-                        </div>
-                        <div>
-                            <div class="flex justify-between text-[10px] text-slate-400 mb-1">
-                                <span>Kontras</span>
-                                <span id="contrastVal" class="text-slate-200">100%</span>
-                            </div>
-                            <input type="range" id="contrastInput" min="0" max="200" value="100">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-slate-800/50 p-2.5 rounded-xl border border-slate-800 flex items-center justify-between">
-                    <span class="text-xs font-medium text-slate-400">Geser Posisi</span>
-                    <div class="grid grid-cols-3 gap-1 w-24">
-                        <div></div>
-                        <button type="button" class="d-pad-btn" onclick="move(activeImgKey, 0, -15)">▲</button>
-                        <div></div>
-                        <button type="button" class="d-pad-btn" onclick="move(activeImgKey, -15, 0)">◀</button>
-                        <button type="button" class="d-pad-btn !bg-red-900/60 !text-red-300 font-bold" onclick="resetPos(activeImgKey)" title="Reset">↺</button>
-                        <button type="button" class="d-pad-btn" onclick="move(activeImgKey, 15, 0)">▶</button>
-                        <div></div>
-                        <button type="button" class="d-pad-btn" onclick="move(activeImgKey, 0, 15)">▼</button>
-                        <div></div>
-                    </div>
-                </div>
             </div>
 
-            <!-- SECTION B: KONTROL GRADASI -->
-            <div id="sectionBlendControls" class="space-y-3 hidden">
-                <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-800 space-y-3">
-                    
-                    <!-- Sub-Grup 1: Transisi Foto -->
-                    <div class="border-b border-slate-700/60 pb-3 space-y-2.5">
-                        <span class="text-[11px] font-bold text-red-400 uppercase tracking-wider block">1. Transisi Foto 1 & 2</span>
-                        
-                        <div>
-                            <div class="flex justify-between text-[11px] font-medium text-slate-400 mb-1">
-                                <span>Posisi Titik Temu Foto</span>
-                                <span id="blendCenterVal" class="text-slate-200 font-bold">650 px</span>
-                            </div>
-                            <input type="range" id="blendCenterInput" min="300" max="1000" step="5" value="650">
-                        </div>
-
-                        <div>
-                            <div class="flex justify-between text-[11px] font-medium text-slate-400 mb-1">
-                                <span>Perluas Transisi Ke Atas</span>
-                                <span id="blendUpVal" class="text-slate-200 font-bold">150 px</span>
-                            </div>
-                            <input type="range" id="blendUpInput" min="20" max="500" step="5" value="150">
-                        </div>
-
-                        <div>
-                            <div class="flex justify-between text-[11px] font-medium text-slate-400 mb-1">
-                                <span>Perluas Transisi Ke Bawah</span>
-                                <span id="blendDownVal" class="text-slate-200 font-bold">200 px</span>
-                            </div>
-                            <input type="range" id="blendDownInput" min="20" max="500" step="5" value="200">
-                        </div>
-                    </div>
-
-                    <!-- Sub-Grup 2: Gradasi Putih Tengah -->
-                    <div class="border-b border-slate-700/60 pb-3 space-y-2.5">
-                        <span class="text-[11px] font-bold text-slate-200 uppercase tracking-wider block flex items-center gap-1.5">
-                            <span class="w-2 h-2 rounded-full bg-white"></span> 2. Gradasi Putih Tengah
-                        </span>
-                        
-                        <div>
-                            <div class="flex justify-between text-[11px] font-medium text-slate-400 mb-1">
-                                <span>Posisi Gradasi Putih</span>
-                                <span id="whiteCenterVal" class="text-slate-200 font-bold">650 px</span>
-                            </div>
-                            <input type="range" id="whiteCenterInput" min="300" max="1000" step="5" value="650">
-                        </div>
-
-                        <div>
-                            <div class="flex justify-between text-[11px] font-medium text-slate-400 mb-1">
-                                <span>Tinggi / Jangkauan Putih</span>
-                                <span id="whiteHeightVal" class="text-slate-200 font-bold">200 px</span>
-                            </div>
-                            <input type="range" id="whiteHeightInput" min="0" max="600" step="10" value="200">
-                        </div>
-
-                        <div>
-                            <div class="flex justify-between text-[11px] font-medium text-slate-400 mb-1">
-                                <span>Opasitas / Kepekatan Putih</span>
-                                <span id="whiteOpacityVal" class="text-slate-200 font-bold">70%</span>
-                            </div>
-                            <input type="range" id="whiteOpacityInput" min="0" max="100" step="5" value="70">
-                        </div>
-                    </div>
-
-                    <!-- Sub-Grup 3: Gradasi Merah Footer -->
-                    <div class="space-y-2.5 pt-1">
-                        <span class="text-[11px] font-bold text-red-400 uppercase tracking-wider block">3. Gradasi Merah Footer (Bawah)</span>
-                        
-                        <div>
-                            <div class="flex justify-between text-[11px] font-medium text-slate-400 mb-1">
-                                <span>Tinggi Area Gradasi Merah</span>
-                                <span id="footerHeightVal" class="text-slate-200 font-bold">430 px</span>
-                            </div>
-                            <input type="range" id="footerHeightInput" min="100" max="700" step="10" value="430">
-                        </div>
-
-                        <div>
-                            <div class="flex justify-between text-[11px] font-medium text-slate-400 mb-1">
-                                <span>Kepekatan / Opasitas Merah</span>
-                                <span id="footerOpacityVal" class="text-slate-200 font-bold">90%</span>
-                            </div>
-                            <input type="range" id="footerOpacityInput" min="0" max="100" step="5" value="90">
-                        </div>
-                    </div>
-
-                </div>
-
-                <button type="button" onclick="resetBlendSettings()" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl border border-slate-700 transition-colors">
-                    Reset Semua Gradasi Default
+            <!-- Header Status Target -->
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <span id="statusBadgeText" class="text-sm font-bold text-red-400">Mode Cover (1 Foto)</span>
+                <input type="file" id="inputFotoActive" accept="image/*" class="hidden">
+                <button onclick="document.getElementById('inputFotoActive').click()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs px-3 py-1.5 rounded-lg border border-slate-700 transition-all flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <span id="uploadBtnText">Unggah Foto</span>
                 </button>
             </div>
 
-            <!-- SECTION C: KONTROL TEKS LENGKAP WITH ALIGNMENT & RULER -->
-            <div id="sectionTextControls" class="space-y-3 hidden">
-                <div class="space-y-1">
-                    <label class="text-xs font-medium text-slate-400">Narasi Berita</label>
-                    <textarea id="inputJudul" rows="3" placeholder="Ketik narasi di sini..." class="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-xl focus:outline-none focus:border-red-500 text-xs text-slate-100 placeholder-slate-500"></textarea>
-                </div>
-
-                <!-- 1. PERATAAN TEKS (ALIGNMENT) -->
+            <!-- SECTION 1: KONTROL GAMBAR (Cover / Foto 1 / Foto 2) -->
+            <div id="sectionImageControls" class="flex flex-col gap-4">
+                <!-- Navigasi Geser Position -->
                 <div>
-                    <label class="text-xs font-medium text-slate-400 mb-1 block">Perataan Teks (Alignment)</label>
-                    <div class="grid grid-cols-4 gap-1 bg-slate-800/80 p-1 rounded-xl border border-slate-700/60">
-                        <button type="button" id="btnAlignLeft" onclick="setTextAlign('left')" class="py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all flex flex-col items-center gap-0.5">
+                    <label class="text-xs font-semibold text-slate-400 block mb-2">Geser Posisi Gambar:</label>
+                    <div class="grid grid-cols-3 gap-2 w-36 mx-auto">
+                        <div></div>
+                        <button onclick="move(activeImgKey, 0, -20)" class="bg-slate-800 hover:bg-slate-700 py-2 rounded-lg text-xs font-bold border border-slate-700">▲</button>
+                        <div></div>
+                        <button onclick="move(activeImgKey, -20, 0)" class="bg-slate-800 hover:bg-slate-700 py-2 rounded-lg text-xs font-bold border border-slate-700">◄</button>
+                        <button onclick="resetPos(activeImgKey)" class="bg-red-950/50 hover:bg-red-900/50 text-red-400 py-2 rounded-lg text-[10px] font-bold border border-red-800/50">RESET</button>
+                        <button onclick="move(activeImgKey, 20, 0)" class="bg-slate-800 hover:bg-slate-700 py-2 rounded-lg text-xs font-bold border border-slate-700">►</button>
+                        <div></div>
+                        <button onclick="move(activeImgKey, 0, 20)" class="bg-slate-800 hover:bg-slate-700 py-2 rounded-lg text-xs font-bold border border-slate-700">▼</button>
+                        <div></div>
+                    </div>
+                </div>
+
+                <!-- Sliders Transform & Filter -->
+                <div class="space-y-3">
+                    <div>
+                        <div class="flex justify-between text-xs text-slate-400 mb-1">
+                            <span>Rotasi:</span>
+                            <span id="rotateVal" class="text-white font-mono">0°</span>
+                        </div>
+                        <input type="range" id="rotateInput" min="-180" max="180" value="0" class="w-full accent-red-600">
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs text-slate-400 mb-1">
+                            <span>Skala / Zoom:</span>
+                            <span id="scaleVal" class="text-white font-mono">100%</span>
+                        </div>
+                        <input type="range" id="scaleInput" min="0.2" max="3" step="0.05" value="1" class="w-full accent-red-600">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <div class="flex justify-between text-xs text-slate-400 mb-1">
+                                <span>Kecerahan:</span>
+                                <span id="brightVal" class="text-white font-mono">100%</span>
+                            </div>
+                            <input type="range" id="brightInput" min="20" max="200" value="100" class="w-full accent-red-600">
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs text-slate-400 mb-1">
+                                <span>Kontras:</span>
+                                <span id="contrastVal" class="text-white font-mono">100%</span>
+                            </div>
+                            <input type="range" id="contrastInput" min="20" max="200" value="100" class="w-full accent-red-600">
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="recrop()" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold border border-slate-700 flex items-center justify-center gap-2 mt-1">
+                    <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                    Potong Ulang (Crop) Gambar Aktiv
+                </button>
+            </div>
+
+            <!-- SECTION 2: KONTROL GRADASI & TRANSISI (DUAL PHOTO) -->
+            <div id="sectionBlendControls" class="flex flex-col gap-4 hidden">
+                <div class="p-3 bg-slate-950 rounded-xl border border-slate-800">
+                    <h3 class="text-xs font-bold text-red-400 uppercase tracking-wider mb-3">Transisi Foto Utama & Foto Latar</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <div class="flex justify-between text-xs text-slate-400 mb-1">
+                                <span>Titik Tengah Transisi:</span>
+                                <span id="blendCenterVal" class="text-white font-mono">500 px</span>
+                            </div>
+                            <input type="range" id="blendCenterInput" min="200" max="1100" value="500" class="w-full accent-red-600">
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs text-slate-400 mb-1">
+                                <span>Sebaran Transisi Atas:</span>
+                                <span id="blendUpVal" class="text-white font-mono">150 px</span>
+                            </div>
+                            <input type="range" id="blendUpInput" min="10" max="500" value="150" class="w-full accent-red-600">
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs text-slate-400 mb-1">
+                                <span>Sebaran Transisi Bawah:</span>
+                                <span id="blendDownVal" class="text-white font-mono">200 px</span>
+                            </div>
+                            <input type="range" id="blendDownInput" min="10" max="500" value="200" class="w-full accent-red-600">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-3 bg-slate-950 rounded-xl border border-slate-800">
+                    <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3">Gradasi Putih Pemisah</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <div class="flex justify-between text-xs text-slate-400 mb-1">
+                                <span>Posisi Tengah:</span>
+                                <span id="whiteCenterVal" class="text-white font-mono">500 px</span>
+                            </div>
+                            <input type="range" id="whiteCenterInput" min="200" max="1100" value="500" class="w-full accent-red-600">
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs text-slate-400 mb-1">
+                                <span>Tinggi Gradasi:</span>
+                                <span id="whiteHeightVal" class="text-white font-mono">200 px</span>
+                            </div>
+                            <input type="range" id="whiteHeightInput" min="0" max="600" value="200" class="w-full accent-red-600">
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs text-slate-400 mb-1">
+                                <span>Transparansi (Opacity):</span>
+                                <span id="whiteOpacityVal" class="text-white font-mono">70%</span>
+                            </div>
+                            <input type="range" id="whiteOpacityInput" min="0" max="100" value="70" class="w-full accent-red-600">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-3 bg-slate-950 rounded-xl border border-slate-800">
+                    <h3 class="text-xs font-bold text-red-500 uppercase tracking-wider mb-3">Gradasi Merah Footer</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <div class="flex justify-between text-xs text-slate-400 mb-1">
+                                <span>Tinggi Overlay Merah:</span>
+                                <span id="footerHeightVal" class="text-white font-mono">350 px</span>
+                            </div>
+                            <input type="range" id="footerHeightInput" min="100" max="800" value="350" class="w-full accent-red-600">
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs text-slate-400 mb-1">
+                                <span>Kepekatan (Opacity):</span>
+                                <span id="footerOpacityVal" class="text-white font-mono">90%</span>
+                            </div>
+                            <input type="range" id="footerOpacityInput" min="0" max="100" value="90" class="w-full accent-red-600">
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="resetBlendSettings()" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold border border-slate-700">
+                    Kembalikan Pengaturan Gradasi Bawaan
+                </button>
+            </div>
+
+            <!-- SECTION 3: EDIT TEKS BERITA -->
+            <div id="sectionTextControls" class="flex flex-col gap-4 hidden">
+                <div>
+                    <label class="text-xs font-semibold text-slate-400 block mb-1">Input Judul / Teks Berita:</label>
+                    <textarea id="inputJudul" rows="3" placeholder="Masukkan judul berita di sini..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-red-600 transition-all resize-none"></textarea>
+                </div>
+
+                <!-- Alignment Switcher -->
+                <div>
+                    <label class="text-xs font-semibold text-slate-400 block mb-1">Rata Teks (Alignment):</label>
+                    <div class="grid grid-cols-4 gap-2 bg-slate-950 p-1 rounded-xl border border-slate-800">
+                        <button id="btnAlignLeft" onclick="setTextAlign('left')" class="py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all flex flex-col items-center gap-0.5">
                             <span>Left</span>
-                            <span class="text-[9px] opacity-75">Rata Kiri</span>
                         </button>
-                        <button type="button" id="btnAlignCenter" onclick="setTextAlign('center')" class="py-1.5 rounded-lg text-xs font-semibold bg-red-600 text-white shadow transition-all flex flex-col items-center gap-0.5">
+                        <button id="btnAlignCenter" onclick="setTextAlign('center')" class="py-1.5 rounded-lg text-xs font-semibold bg-red-600 text-white shadow transition-all flex flex-col items-center gap-0.5">
                             <span>Center</span>
-                            <span class="text-[9px] opacity-75">Tengah</span>
                         </button>
-                        <button type="button" id="btnAlignRight" onclick="setTextAlign('right')" class="py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all flex flex-col items-center gap-0.5">
+                        <button id="btnAlignRight" onclick="setTextAlign('right')" class="py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all flex flex-col items-center gap-0.5">
                             <span>Right</span>
-                            <span class="text-[9px] opacity-75">Rata Kanan</span>
                         </button>
-                        <button type="button" id="btnAlignJustify" onclick="setTextAlign('justify')" class="py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all flex flex-col items-center gap-0.5">
+                        <button id="btnAlignJustify" onclick="setTextAlign('justify')" class="py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all flex flex-col items-center gap-0.5">
                             <span>Justify</span>
-                            <span class="text-[9px] opacity-75">Kiri-Kanan</span>
                         </button>
                     </div>
                 </div>
 
-                <!-- 2. SLIDER UKURAN & LEBAR AREA TEKS -->
-                <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-800 space-y-2.5">
+                <!-- Size & Box Width Controls -->
+                <div class="space-y-3">
                     <div>
-                        <div class="flex justify-between text-[11px] font-medium text-slate-400 mb-1">
-                            <span>Ukuran Teks</span>
-                            <span id="fontSizeVal" class="text-red-400 font-bold">48px</span>
+                        <div class="flex justify-between text-xs text-slate-400 mb-1">
+                            <span>Ukuran Font Teks:</span>
+                            <span id="fontSizeVal" class="text-white font-mono">48px</span>
                         </div>
-                        <input type="range" id="fontSizeInput" min="20" max="120" value="48">
+                        <input type="range" id="fontSizeInput" min="20" max="100" value="48" class="w-full accent-red-600">
                     </div>
-
                     <div>
-                        <div class="flex justify-between text-[11px] font-medium text-slate-400 mb-1">
-                            <span>Lebar Area Teks (Margin Boks)</span>
-                            <span id="boxWidthVal" class="text-slate-200 font-bold">900 px</span>
+                        <div class="flex justify-between text-xs text-slate-400 mb-1">
+                            <span>Lebar Area Paragraf:</span>
+                            <span id="boxWidthVal" class="text-white font-mono">900 px</span>
                         </div>
-                        <input type="range" id="boxWidthInput" min="400" max="1040" step="10" value="900">
+                        <input type="range" id="boxWidthInput" min="300" max="1040" value="900" class="w-full accent-red-600">
                     </div>
                 </div>
 
-                <!-- 3. RULER & PRESIcenter CONTROL -->
-                <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-800 space-y-2.5">
+                <!-- Position Helper Controls -->
+                <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 flex flex-col gap-2">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-medium text-slate-300 flex items-center gap-1.5">
-                            <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                            Garis Bantu / Ruler Tengah
-                        </span>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" id="toggleRuler" class="sr-only peer" checked onchange="toggleRuler(this.checked)">
-                            <div class="w-9 h-5 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-600"></div>
-                        </label>
+                        <span class="text-xs text-slate-400">Koordinat Teks Saat Ini:</span>
+                        <span id="posCoords" class="text-xs font-mono text-red-400 font-bold">X: 540 | Y: 850</span>
                     </div>
-
-                    <div class="flex items-center justify-between pt-2 border-t border-slate-700/50">
-                        <div class="text-[11px] text-slate-400">
-                            Posisi Teks: <span id="posCoords" class="text-slate-200 font-mono font-bold">X: 540 | Y: 1120</span>
-                        </div>
-                        <button type="button" onclick="snapToCenter()" class="px-2.5 py-1 bg-red-900/50 hover:bg-red-800/80 text-red-200 border border-red-700/60 rounded-lg text-[11px] font-semibold transition-all shadow flex items-center gap-1">
-                            <span>🎯 Pas Tengah (X: 540)</span>
+                    <div class="flex gap-2 mt-1">
+                        <button onclick="snapToCenter()" class="flex-1 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-semibold rounded-lg border border-slate-700">
+                            🎯 Pas Tengah Sumbu X (540)
                         </button>
                     </div>
                 </div>
-
-                <p class="text-[10px] text-slate-500 italic">* Teks bisa digeser langsung dengan jari/mouse pada kanvas (akan snap otomatis ke tengah saat mendekati X=540).</p>
             </div>
 
-        </div>
+        </section>
+    </main>
 
+    <!-- MODAL CROPPER.JS -->
+    <div id="cropModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 max-w-2xl w-full flex flex-col gap-4 shadow-2xl">
+            <h3 class="text-base font-bold text-white flex items-center justify-between border-b border-slate-800 pb-2">
+                <span>Potong & Sesuaikan Gambar</span>
+                <span class="text-xs font-normal text-slate-400">Tarik area pemotong sesuai kebutuhan</span>
+            </h3>
+            <div class="max-h-[60vh] overflow-hidden rounded-xl bg-slate-950 flex items-center justify-center">
+                <img id="cropTargetImage" class="max-w-full max-h-[60vh] block">
+            </div>
+            <div class="flex justify-end gap-3 pt-2">
+                <button onclick="closeCropModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition-all">
+                    Batal
+                </button>
+                <button onclick="applyCrop()" class="px-5 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs font-bold transition-all shadow-lg">
+                    Terapkan Potongan
+                </button>
+            </div>
+        </div>
     </div>
 
-    <!-- MODAL CROPPER -->
-    <div id="cropModal" class="fixed inset-0 bg-slate-950/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-xl w-full p-4 shadow-2xl flex flex-col max-h-[90vh]">
-            <div class="flex justify-between items-center pb-3 border-b border-slate-800">
-                <h3 class="font-bold text-slate-200 text-sm">Potong / Crop Gambar</h3>
-                <button type="button" onclick="closeCropModal()" class="text-slate-400 hover:text-white font-bold text-lg">&times;</button>
-            </div>
-            
-            <div class="my-3 overflow-hidden relative flex-1 min-h-[250px] bg-slate-950 rounded-xl flex items-center justify-center">
-                <img id="cropTargetImage" class="max-w-full max-h-full block">
-            </div>
+</body>
+</html>
 
-            <div class="flex justify-end gap-2 pt-2">
-                <button type="button" onclick="closeCropModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold">Batal</button>
-                <button type="button" onclick="applyCrop()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-semibold">Terapkan Potongan</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Cropper JS -->
+    <!-- Cropper JS Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
 
+    <!-- JAVASCRIPT LOGIC ENGINE -->
     <script>
         const canvas = document.getElementById('mainCanvas');
         const ctx = canvas.getContext('2d');
@@ -410,6 +342,7 @@
         // State Global Aplikasi
         let activeImgKey = 'img1'; 
         let state = {
+            isCoverMode: false, // Flag Mode Cover (1 Gambar) vs Dual Photo
             img1: { obj: null, originalSrc: null, scale: 1, x: 0, y: 0, brightness: 100, contrast: 100, rotation: 0 },
             img2: { obj: null, originalSrc: null, scale: 1, x: 0, y: 0, brightness: 100, contrast: 100, rotation: 0 },
             blend: { center: 650, spreadUp: 150, spreadDown: 200 }, // Transisi foto 1 & 2
@@ -447,6 +380,7 @@
 
         // Switch Active Control Target Panel
         function selectActiveTarget(targetKey) {
+            const tabCover = document.getElementById('tabCover');
             const tab1 = document.getElementById('tabImg1');
             const tab2 = document.getElementById('tabImg2');
             const tabBlend = document.getElementById('tabBlend');
@@ -457,48 +391,62 @@
             const sectionText = document.getElementById('sectionTextControls');
             const badgeText = document.getElementById('statusBadgeText');
 
-            [tab1, tab2, tabBlend, tabText].forEach(t => t.className = "py-2 rounded-lg transition-all text-center text-slate-400 hover:text-white truncate");
+            const tabs = [tabCover, tab1, tab2, tabBlend, tabText].filter(Boolean);
+            tabs.forEach(t => t.className = "py-2 rounded-lg transition-all text-center text-slate-400 hover:text-white truncate");
 
             sectionImg.classList.add('hidden');
             sectionBlend.classList.add('hidden');
             sectionText.classList.add('hidden');
 
-            if (targetKey === 'img1' || targetKey === 'img2') {
+            if (targetKey === 'cover') {
+                state.isCoverMode = true;
+                activeImgKey = 'img1'; // Mode cover mengontrol gambar tunggal (img1)
+                sectionImg.classList.remove('hidden');
+
+                if (tabCover) tabCover.className = "py-2 rounded-lg transition-all text-center bg-red-600 text-white shadow font-semibold truncate";
+                badgeText.innerText = "Mode Cover (1 Foto)";
+                document.getElementById('uploadBtnText').innerText = "Unggah Cover";
+                syncImageControls('img1');
+
+            } else if (targetKey === 'img1' || targetKey === 'img2') {
+                state.isCoverMode = false;
                 activeImgKey = targetKey;
                 sectionImg.classList.remove('hidden');
 
                 if (targetKey === 'img1') {
-                    tab1.className = "py-2 rounded-lg transition-all text-center bg-red-600 text-white shadow font-semibold truncate";
+                    if (tab1) tab1.className = "py-2 rounded-lg transition-all text-center bg-red-600 text-white shadow font-semibold truncate";
                     badgeText.innerText = "Foto Utama Terpilih";
                     document.getElementById('uploadBtnText').innerText = "Foto Utama";
                 } else {
-                    tab2.className = "py-2 rounded-lg transition-all text-center bg-red-600 text-white shadow font-semibold truncate";
+                    if (tab2) tab2.className = "py-2 rounded-lg transition-all text-center bg-red-600 text-white shadow font-semibold truncate";
                     badgeText.innerText = "Foto Latar Terpilih";
                     document.getElementById('uploadBtnText').innerText = "Foto Latar";
                 }
-
-                // Sync Slider Gambar
-                const cur = state[activeImgKey];
-                document.getElementById('rotateInput').value = cur.rotation;
-                document.getElementById('rotateVal').innerText = cur.rotation + '°';
-                document.getElementById('scaleInput').value = cur.scale;
-                document.getElementById('scaleVal').innerText = Math.round(cur.scale * 100) + '%';
-                document.getElementById('brightInput').value = cur.brightness;
-                document.getElementById('brightVal').innerText = cur.brightness + '%';
-                document.getElementById('contrastInput').value = cur.contrast;
-                document.getElementById('contrastVal').innerText = cur.contrast + '%';
+                syncImageControls(activeImgKey);
 
             } else if (targetKey === 'blend') {
                 sectionBlend.classList.remove('hidden');
-                tabBlend.className = "py-2 rounded-lg transition-all text-center bg-red-600 text-white shadow font-semibold truncate";
+                if (tabBlend) tabBlend.className = "py-2 rounded-lg transition-all text-center bg-red-600 text-white shadow font-semibold truncate";
                 badgeText.innerText = "Pengatur Gradasi";
 
             } else if (targetKey === 'text') {
                 sectionText.classList.remove('hidden');
-                tabText.className = "py-2 rounded-lg transition-all text-center bg-red-600 text-white shadow font-semibold truncate";
+                if (tabText) tabText.className = "py-2 rounded-lg transition-all text-center bg-red-600 text-white shadow font-semibold truncate";
                 badgeText.innerText = "Mode Edit Teks";
             }
             drawCanvas();
+        }
+
+        function syncImageControls(key) {
+            const cur = state[key];
+            document.getElementById('rotateInput').value = cur.rotation;
+            document.getElementById('rotateVal').innerText = cur.rotation + '°';
+            document.getElementById('scaleInput').value = cur.scale;
+            document.getElementById('scaleVal').innerText = Math.round(cur.scale * 100) + '%';
+            document.getElementById('brightInput').value = cur.brightness;
+            document.getElementById('brightVal').innerText = cur.brightness + '%';
+            document.getElementById('contrastInput').value = cur.contrast;
+            document.getElementById('contrastVal').innerText = cur.contrast + '%';
         }
 
         // Teks Alignment Switcher
@@ -510,19 +458,14 @@
             const btnJ = document.getElementById('btnAlignJustify');
 
             [btnL, btnC, btnR, btnJ].forEach(btn => {
-                btn.className = "py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all flex flex-col items-center gap-0.5";
+                if (btn) btn.className = "py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all flex flex-col items-center gap-0.5";
             });
 
-            if (alignMode === 'left') btnL.className = "py-1.5 rounded-lg text-xs font-semibold bg-red-600 text-white shadow transition-all flex flex-col items-center gap-0.5";
-            if (alignMode === 'center') btnC.className = "py-1.5 rounded-lg text-xs font-semibold bg-red-600 text-white shadow transition-all flex flex-col items-center gap-0.5";
-            if (alignMode === 'right') btnR.className = "py-1.5 rounded-lg text-xs font-semibold bg-red-600 text-white shadow transition-all flex flex-col items-center gap-0.5";
-            if (alignMode === 'justify') btnJ.className = "py-1.5 rounded-lg text-xs font-semibold bg-red-600 text-white shadow transition-all flex flex-col items-center gap-0.5";
+            if (alignMode === 'left' && btnL) btnL.className = "py-1.5 rounded-lg text-xs font-semibold bg-red-600 text-white shadow transition-all flex flex-col items-center gap-0.5";
+            if (alignMode === 'center' && btnC) btnC.className = "py-1.5 rounded-lg text-xs font-semibold bg-red-600 text-white shadow transition-all flex flex-col items-center gap-0.5";
+            if (alignMode === 'right' && btnR) btnR.className = "py-1.5 rounded-lg text-xs font-semibold bg-red-600 text-white shadow transition-all flex flex-col items-center gap-0.5";
+            if (alignMode === 'justify' && btnJ) btnJ.className = "py-1.5 rounded-lg text-xs font-semibold bg-red-600 text-white shadow transition-all flex flex-col items-center gap-0.5";
 
-            drawCanvas();
-        }
-
-        function toggleRuler(enabled) {
-            state.text.showRuler = enabled;
             drawCanvas();
         }
 
@@ -533,7 +476,8 @@
         }
 
         function updatePosCoordsDisplay() {
-            document.getElementById('posCoords').innerText = `X: ${Math.round(state.text.x)} | Y: ${Math.round(state.text.y)}`;
+            const el = document.getElementById('posCoords');
+            if (el) el.innerText = `X: ${Math.round(state.text.x)} | Y: ${Math.round(state.text.y)}`;
         }
 
         function resetBlendSettings() {
@@ -590,10 +534,14 @@
                 return;
             }
 
-            if (pos.y < state.blend.center) {
-                selectActiveTarget('img1');
+            if (state.isCoverMode) {
+                selectActiveTarget('cover');
             } else {
-                selectActiveTarget('img2');
+                if (pos.y < state.blend.center) {
+                    selectActiveTarget('img1');
+                } else {
+                    selectActiveTarget('img2');
+                }
             }
         };
 
@@ -604,7 +552,6 @@
             if (state.text.isDragging) {
                 const pos = getMousePos(e);
                 
-                // Smart Snap to Center (x = 540) saat mendekati batas 15px
                 if (Math.abs(pos.x - 540) < 15) {
                     state.text.x = 540;
                 } else {
@@ -631,7 +578,7 @@
         function resetPos(key) {
             state[key].x = 0; state[key].y = 0; state[key].scale = 1;
             state[key].brightness = 100; state[key].contrast = 100; state[key].rotation = 0;
-            selectActiveTarget(key);
+            selectActiveTarget(state.isCoverMode ? 'cover' : key);
         }
 
         function drawScaledImage(targetCtx, imgData, x, y, w, h) {
@@ -659,7 +606,6 @@
             targetCtx.filter = 'none';
         }
 
-        // Algoritma Justify (Rata Kiri-Kanan) Teks Kanvas
         function drawJustifiedLine(targetCtx, text, startX, lineY, targetWidth) {
             const words = text.trim().split(' ');
             if (words.length <= 1) {
@@ -679,7 +625,6 @@
             const calculatedSpace = (targetWidth - totalWordsWidth) / spaceCount;
             const defaultSpace = targetCtx.measureText(' ').width;
 
-            // Jika spasi terlalu rapat atau terlalu ekstrim, gunakan standar left align
             if (calculatedSpace < defaultSpace * 0.4) {
                 targetCtx.textAlign = 'left';
                 targetCtx.fillText(text, startX, lineY);
@@ -699,66 +644,78 @@
             ctx.fillStyle = "#ffffff";
             ctx.fillRect(0, 0, width, height);
 
-            const topBound = Math.max(0, state.blend.center - state.blend.spreadUp);
-            const bottomBound = Math.min(height, state.blend.center + state.blend.spreadDown);
+            // ================= MODE COVER (1 GAMBAR TUNGGAL) =================
+            if (state.isCoverMode) {
+                if (state.img1.obj) {
+                    drawScaledImage(ctx, state.img1, 0, 0, width, height);
+                } else {
+                    ctx.fillStyle = '#1e293b';
+                    ctx.fillRect(0, 0, width, height);
+                }
+            } 
+            // ================= MODE DUAL PHOTO (FOTO 1 & 2) =================
+            else {
+                const topBound = Math.max(0, state.blend.center - state.blend.spreadUp);
+                const bottomBound = Math.min(height, state.blend.center + state.blend.spreadDown);
 
-            // ================= 1. GAMBAR LATAR (FOTO 2) =================
-            offCtx2.clearRect(0, 0, width, height);
-            if (state.img2.obj) {
-                drawScaledImage(offCtx2, state.img2, 0, topBound, width, height - topBound);
+                // 1. GAMBAR LATAR (FOTO 2)
+                offCtx2.clearRect(0, 0, width, height);
+                if (state.img2.obj) {
+                    drawScaledImage(offCtx2, state.img2, 0, topBound, width, height - topBound);
 
-                const fadeGradient2 = offCtx2.createLinearGradient(0, topBound, 0, bottomBound);
-                fadeGradient2.addColorStop(0, 'rgba(0,0,0,0)');
-                fadeGradient2.addColorStop(1, 'rgba(0,0,0,1)');
+                    const fadeGradient2 = offCtx2.createLinearGradient(0, topBound, 0, bottomBound);
+                    fadeGradient2.addColorStop(0, 'rgba(0,0,0,0)');
+                    fadeGradient2.addColorStop(1, 'rgba(0,0,0,1)');
 
-                offCtx2.globalCompositeOperation = 'destination-in';
-                offCtx2.fillStyle = fadeGradient2;
-                offCtx2.fillRect(0, topBound, width, height - topBound);
-                offCtx2.globalCompositeOperation = 'source-over';
+                    offCtx2.globalCompositeOperation = 'destination-in';
+                    offCtx2.fillStyle = fadeGradient2;
+                    offCtx2.fillRect(0, topBound, width, height - topBound);
+                    offCtx2.globalCompositeOperation = 'source-over';
 
-                ctx.drawImage(offCanvas2, 0, 0);
-            } else {
-                ctx.fillStyle = '#1e293b';
-                ctx.fillRect(0, topBound, width, height - topBound);
-            }
+                    ctx.drawImage(offCanvas2, 0, 0);
+                } else {
+                    ctx.fillStyle = '#1e293b';
+                    ctx.fillRect(0, topBound, width, height - topBound);
+                }
 
-            // ================= 2. GAMBAR UTAMA (FOTO 1) =================
-            offCtx1.clearRect(0, 0, width, height);
-            if (state.img1.obj) {
-                drawScaledImage(offCtx1, state.img1, 0, 0, width, bottomBound);
-            } else {
-                offCtx1.fillStyle = '#334155';
+                // 2. GAMBAR UTAMA (FOTO 1)
+                offCtx1.clearRect(0, 0, width, height);
+                if (state.img1.obj) {
+                    drawScaledImage(offCtx1, state.img1, 0, 0, width, bottomBound);
+                } else {
+                    offCtx1.fillStyle = '#334155';
+                    offCtx1.fillRect(0, 0, width, bottomBound);
+                }
+
+                const fadeGradient1 = offCtx1.createLinearGradient(0, topBound, 0, bottomBound);
+                fadeGradient1.addColorStop(0, 'rgba(0,0,0,1)');
+                fadeGradient1.addColorStop(1, 'rgba(0,0,0,0)');
+
+                offCtx1.globalCompositeOperation = 'destination-in';
+                offCtx1.fillStyle = fadeGradient1;
                 offCtx1.fillRect(0, 0, width, bottomBound);
+                offCtx1.globalCompositeOperation = 'source-over';
+
+                ctx.drawImage(offCanvas1, 0, 0);
+
+                // 3. GRADASI PUTIH TENGAH
+                if (state.whiteGrad.height > 0 && state.whiteGrad.opacity > 0) {
+                    const wCenter = state.whiteGrad.center;
+                    const wHeight = state.whiteGrad.height;
+                    const wOpacity = state.whiteGrad.opacity / 100;
+                    const wTop = wCenter - (wHeight / 2);
+
+                    const whiteGrad = ctx.createLinearGradient(0, wTop, 0, wTop + wHeight);
+                    whiteGrad.addColorStop(0, 'rgba(255, 255, 255, 0)');
+                    whiteGrad.addColorStop(0.5, `rgba(255, 255, 255, ${wOpacity})`);
+                    whiteGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+                    ctx.fillStyle = whiteGrad;
+                    ctx.fillRect(0, wTop, width, wHeight);
+                }
             }
 
-            const fadeGradient1 = offCtx1.createLinearGradient(0, topBound, 0, bottomBound);
-            fadeGradient1.addColorStop(0, 'rgba(0,0,0,1)');
-            fadeGradient1.addColorStop(1, 'rgba(0,0,0,0)');
-
-            offCtx1.globalCompositeOperation = 'destination-in';
-            offCtx1.fillStyle = fadeGradient1;
-            offCtx1.fillRect(0, 0, width, bottomBound);
-            offCtx1.globalCompositeOperation = 'source-over';
-
-            ctx.drawImage(offCanvas1, 0, 0);
-
-            // ================= 3. GRADASI PUTIH TENGAH =================
-            if (state.whiteGrad.height > 0 && state.whiteGrad.opacity > 0) {
-                const wCenter = state.whiteGrad.center;
-                const wHeight = state.whiteGrad.height;
-                const wOpacity = state.whiteGrad.opacity / 100;
-                const wTop = wCenter - (wHeight / 2);
-
-                const whiteGrad = ctx.createLinearGradient(0, wTop, 0, wTop + wHeight);
-                whiteGrad.addColorStop(0, 'rgba(255, 255, 255, 0)');
-                whiteGrad.addColorStop(0.5, `rgba(255, 255, 255, ${wOpacity})`);
-                whiteGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
-
-                ctx.fillStyle = whiteGrad;
-                ctx.fillRect(0, wTop, width, wHeight);
-            }
-
-            // ================= 4. OVERLAY HEADER & LOGO =================
+            // ================= OVERLAY HEADER & LOGO =================
             const hGrad = ctx.createLinearGradient(0, 0, 0, 200);
             hGrad.addColorStop(0, 'rgba(0,0,0,0.6)');
             hGrad.addColorStop(1, 'rgba(0,0,0,0)');
@@ -771,7 +728,7 @@
                 ctx.drawImage(assets.logoRight, width - 50 - w, 50, w, 100);
             }
 
-            // ================= 5. OVERLAY FOOTER MAROON GRADIENT =================
+            // ================= OVERLAY FOOTER MAROON GRADIENT =================
             const fHeight = state.footerGrad.height;
             const fOpacity = state.footerGrad.opacity / 100;
             const footerStartY = height - fHeight;
@@ -784,7 +741,7 @@
             ctx.fillStyle = maroonGrad;
             ctx.fillRect(0, footerStartY, width, fHeight);
 
-            // ================= 6. RENDERING TEKS BERITA =================
+            // ================= RENDERING TEKS BERITA =================
             if (state.text.content.trim() !== "") {
                 ctx.save();
                 ctx.textBaseline = 'middle';
@@ -818,7 +775,6 @@
                     } else if (state.text.align === 'justify') {
                         drawJustifiedLine(ctx, upperText, leftX, currentLineY, boxW);
                     } else {
-                        // Default Center
                         ctx.textAlign = 'center';
                         ctx.fillText(upperText, state.text.x, currentLineY);
                     }
@@ -826,20 +782,18 @@
                 ctx.restore();
             }
 
-            // ================= 7. FOOTER FRAME BORDER =================
+            // ================= FOOTER FRAME BORDER =================
             if (assets.footerImg.complete && assets.footerImg.width > 0) {
                 const fW = width;
                 const fH = fW * (assets.footerImg.height / assets.footerImg.width);
                 ctx.drawImage(assets.footerImg, 0, height - fH, fW, fH);
             }
 
-            // ================= 8. GARIS BANTU / RULER PRESIcenter =================
+            // ================= GARIS BANTU / RULER =================
             if (state.text.showRuler || state.text.isDragging) {
                 ctx.save();
-                
                 const isExactCenter = Math.abs(state.text.x - 540) < 2;
 
-                // A. Garis Vertikal Tengah Kanvas (X = 540)
                 ctx.beginPath();
                 ctx.setLineDash([8, 6]);
                 ctx.lineWidth = isExactCenter ? 3 : 1.5;
@@ -848,7 +802,6 @@
                 ctx.lineTo(540, height);
                 ctx.stroke();
 
-                // B. Garis Horizontal Posisi Teks (Y = state.text.y)
                 ctx.beginPath();
                 ctx.setLineDash([4, 4]);
                 ctx.lineWidth = 1;
@@ -857,7 +810,6 @@
                 ctx.lineTo(width, state.text.y);
                 ctx.stroke();
 
-                // C. Bounding Box Lebar Area Teks
                 const boxW = state.text.boxWidth;
                 const leftX = state.text.x - (boxW / 2);
                 ctx.beginPath();
@@ -867,7 +819,6 @@
                 ctx.rect(leftX, state.text.y - 45, boxW, 90);
                 ctx.stroke();
 
-                // D. Badge Penunjuk Posisi di Atas Teks
                 const badgeText = isExactCenter ? "🎯 PAS TENGAH (X: 540)" : `X: ${Math.round(state.text.x)} | Y: ${Math.round(state.text.y)}`;
                 ctx.fillStyle = isExactCenter ? 'rgba(34, 197, 94, 0.95)' : 'rgba(15, 23, 42, 0.9)';
                 ctx.fillRect(state.text.x - 130, state.text.y - 85, 260, 28);
@@ -912,11 +863,57 @@
         }
 
         function recrop(key) {
-            if (state[key].originalSrc) openCropModal(state[key].originalSrc, key);
+            const target = key || activeImgKey;
+            if (state[target].originalSrc) openCropModal(state[target].originalSrc, target);
             else alert("Silakan unggah gambar terlebih dahulu.");
         }
 
-        // Event Listeners Transisi Foto 1 & 2
+        // ================= LOGIKA UPLOAD & DRAG AND DROP =================
+        function processUploadedFile(file, targetKey) {
+            if (!file || !file.type.startsWith('image/')) {
+                alert("Harap pilih atau tarik file gambar valid.");
+                return;
+            }
+            const key = targetKey || activeImgKey;
+            const reader = new FileReader();
+            reader.onload = (f) => {
+                state[key].originalSrc = f.target.result;
+                openCropModal(f.target.result, key);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Set Up Drag & Drop Event Listeners
+        function setupDragAndDrop() {
+            const dropTargets = [canvas, document.getElementById('dropZoneArea')].filter(Boolean);
+
+            dropTargets.forEach(target => {
+                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                    target.addEventListener(eventName, (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }, false);
+                });
+
+                ['dragenter', 'dragover'].forEach(eventName => {
+                    target.addEventListener(eventName, () => target.classList.add('border-red-500', 'ring-2', 'ring-red-500'), false);
+                });
+
+                ['dragleave', 'drop'].forEach(eventName => {
+                    target.addEventListener(eventName, () => target.classList.remove('border-red-500', 'ring-2', 'ring-red-500'), false);
+                });
+
+                target.addEventListener('drop', (e) => {
+                    const dt = e.dataTransfer;
+                    const files = dt.files;
+                    if (files.length > 0) {
+                        processUploadedFile(files[0], activeImgKey);
+                    }
+                });
+            });
+        }
+
+        // Event Listeners Transisi Foto
         document.getElementById('blendCenterInput').addEventListener('input', (e) => {
             state.blend.center = parseInt(e.target.value);
             document.getElementById('blendCenterVal').innerText = e.target.value + ' px';
@@ -935,7 +932,7 @@
             drawCanvas();
         });
 
-        // Event Listeners Gradasi Putih Tengah
+        // Event Listeners Gradasi Putih
         document.getElementById('whiteCenterInput').addEventListener('input', (e) => {
             state.whiteGrad.center = parseInt(e.target.value);
             document.getElementById('whiteCenterVal').innerText = e.target.value + ' px';
@@ -954,7 +951,7 @@
             drawCanvas();
         });
 
-        // Event Listeners Gradasi Merah Footer
+        // Event Listeners Gradasi Footer
         document.getElementById('footerHeightInput').addEventListener('input', (e) => {
             state.footerGrad.height = parseInt(e.target.value);
             document.getElementById('footerHeightVal').innerText = e.target.value + ' px';
@@ -967,20 +964,15 @@
             drawCanvas();
         });
 
-        // Event Listeners Input Gambar & Teks
+        // Event Listeners Input File Klick Normal
         document.getElementById('inputFotoActive').addEventListener('change', function (e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (f) => {
-                    state[activeImgKey].originalSrc = f.target.result;
-                    openCropModal(f.target.result, activeImgKey);
-                    e.target.value = '';
-                };
-                reader.readAsDataURL(file);
+            if (e.target.files && e.target.files[0]) {
+                processUploadedFile(e.target.files[0], activeImgKey);
+                e.target.value = '';
             }
         });
 
+        // Event Listeners Input Teks & Kontrol Gambar
         document.getElementById('inputJudul').addEventListener('input', (e) => {
             state.text.content = e.target.value;
             drawCanvas();
@@ -1023,7 +1015,6 @@
         });
 
         document.getElementById('btnDownload').addEventListener('click', () => {
-            // Sembunyikan garis bantu sebelum mengunduh hasil gambar
             const tempRulerState = state.text.showRuler;
             state.text.showRuler = false;
             drawCanvas();
@@ -1033,12 +1024,14 @@
             link.href = canvas.toDataURL('image/jpeg', 0.95);
             link.click();
 
-            // Kembalikan status ruler semula
             state.text.showRuler = tempRulerState;
             drawCanvas();
         });
 
-        window.onload = drawCanvas;
+        window.onload = () => {
+            setupDragAndDrop();
+            selectActiveTarget('cover'); // Default membuka tab Mode Cover
+        };
     </script>
 </body>
 </html>
